@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 20160321140417) do
   add_index "kingakus", ["member_id"], name: "index_kingakus_on_member_id"
 
   create_table "lists", force: :cascade do |t|
+    t.string   "name"
     t.string   "url_hash"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

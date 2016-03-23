@@ -30,11 +30,13 @@ RSpec.describe WarikanUtil, :type => :model do
   end
 
   describe "#add_kingaku" do
-    context "when list and member exist" do 
-      let!(:list_id) {WarikanUtil.create_list}
-      let!(:member_id) {WarikanUtil.add_member(list_id)}
+    context "when list and member exist" do
+      before do
+        @list_id = WarikanUtil.create_list
+        @member_id = WarikanUtil.add_member(@list_id,"sample user")
+      end
       it "can add kingaku" do
-        expect(WarikanUtil.add_kingaku(list_id, member_id, 123, "warikan memo").integer?).to eq true
+        expect(WarikanUtil.add_kingaku(@list_id, @member_id, 123, "warikan memo").instance_of?(Fixnum)).to eq true
       end
     end
     

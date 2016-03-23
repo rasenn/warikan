@@ -8,17 +8,19 @@ class WarikanUtil
   end
 
   def self.add_member(list_id,member_name)
+    return false unless List.find_by("id=?",list_id)
     member = Member.new
-    member.lists_id = list_id
+    member.list_id = list_id
     member.name = member_name
     member.save ? member.id : false
   end
 
   # TODO class check
   def self.add_kingaku(list_id,member_id,kingaku,memo)
+    return false unless List.find_by("id=?",list_id) && Member.find_by("id=?",member_id)
     kingaku = Kingaku.new
-    kingaku.lists_id = list_id
-    kingaku.members_id = member_id
+    kingaku.list_id = list_id
+    kingaku.member_id = member_id
     kingaku.kingaku = kingaku
     kingaku.memo = memo
     kingaku.save ? kingaku.id : false
