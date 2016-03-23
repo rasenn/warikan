@@ -1,8 +1,9 @@
 class WarikanUtil
 
-  def self.create_list
+  def self.create_list(name=nil)
     list = List.new
     list.url_hash = SecureRandom.urlsafe_base64(10)
+    list.name = name
     list.created_at = Time.now
     return list.save ? list.id : self.create_list
   end
@@ -16,19 +17,19 @@ class WarikanUtil
   end
 
   # TODO class check
-  def self.add_kingaku(list_id,member_id,kingaku,memo)
+  def self.add_kingaku(list_id,member_id,ikingaku,memo)
     return false unless List.find_by("id=?",list_id) && Member.find_by("id=?",member_id)
     kingaku = Kingaku.new
     kingaku.list_id = list_id
     kingaku.member_id = member_id
-    kingaku.kingaku = kingaku
+    kingaku.kingaku = ikingaku
     kingaku.memo = memo
     kingaku.save ? kingaku.id : false
   end
 
   def self.already_added?(list_id,kingaku)
-    result = Kingaku.find_by("list_id=? and kingaku=? and created_at>=?", [list_id, kingaku, (Time.now - (60*60))])
-    return result && result.count > 0 
+    result = Kingaku.find_by("list_id=? and kingaku=? and created_at>=?", list_id, kingaku, (Time.now - (60*60)))
+    return result ? true : false
   end
 
   def self.delete_member(list_id, member_id)
@@ -42,31 +43,32 @@ class WarikanUtil
   end
 
   def self.calc_shiharaigaku(list_id)
-    lists = List.find_by("id=?", list_id).includes([:members, :kingakus])
+    lists = List.includes([:members, :kingakus]).find_by("id=?", list_id)
     members = lists.members
     kingakus = lists.kingakus
 
     # init
+    m_count = 0
     member_kingakus = Hash.new
     id2member = Hash.new
     members.each do |m|
       member_kingakus[m.id] = 0
       id2member[m.id] = m.name
+      m_count += 1
     end
     sum = 0
-    m_count = 0
+
 
     # calc
     kingakus.each do |k|
       member_kingakus[k.member_id] += k.kingaku
-      sum += kingaku
-      m_count += 1
+      sum += k.kingaku
     end
 
     # create return
     result = Array.new
     id2member.each do |m_id, m_name|
-      result.push [m_id, m_name, (m_count/3 - member_kingakus[m_id])]
+      result.push [m_id, m_name, (sum/m_count - member_kingakus[m_id])]
     end
 
     return result

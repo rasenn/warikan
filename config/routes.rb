@@ -1,14 +1,20 @@
 Rails.application.routes.draw do
   get 'lists/list'
+  post 'lists/list'
 
   get 'lists/new'
-
-  get 'lists/initialize'
+  get 'lists/init'
 
   get 'lists/add_kingaku'
+  post 'lists/confirm_kingaku'
 
   get 'lists/edit_member'
+  post 'lists/edit_member'
 
+  get 'lists/delete_kingaku'
+  
+  root "lists#new"
+  
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

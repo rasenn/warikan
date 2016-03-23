@@ -1,2 +1,29 @@
-<h1>Lists#list</h1>
-<p>Find me in app/views/lists/list.html.erb</p>
+
+<table>
+  <tr><th>金額</th><th>メモ</th><th>メンバ</th><th>削除</th></tr>
+  <%- @kingakus.each do |k| -%>
+  <tr>
+    <td><%=k.kingaku%></td><td><%=k.memo%></td><td><%=k.member.name%></td>
+    <td><%= link_to "X", :action => "delete_kingaku", :url_hash => @list.url_hash, :kingaku_id => k.id %></td>
+  </tr>
+  <%- end -%>
+</table>
+
+<%= link_to "割り勘追加", :controller => "lists", :action => "add_kingaku", :url_hash => @list.url_hash %><br />
+<br /><br />
+
+<table>
+  <tr><th>メンバ</th><th>支払額</th></tr>
+  <%- @shiharaigaku.each do |l|-%>
+  <tr>
+    <td><%=l[1]%></td><td><%=l[2]%></td>
+  </tr>
+  <%- end -%>
+</table>
+<%= link_to "メンバ編集", :controller => "lists", :action => "edit_member", :url_hash => @list.url_hash %><br />
+<br /><br />
+
+
+URL:<br /><br />
+<%= url_for :only_path => false, :controller => "lists", :action => "list", :url_hash => @list.url_hash %>
+

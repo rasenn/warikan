@@ -2,13 +2,6 @@ require 'rails_helper'
 
 RSpec.describe ListsController, :type => :controller do
 
-  describe "GET list" do
-    it "returns http success" do
-      get :list
-      expect(response).to have_http_status(:success)
-    end
-  end
-
   describe "GET new" do
     it "returns http success" do
       get :new
@@ -16,9 +9,16 @@ RSpec.describe ListsController, :type => :controller do
     end
   end
 
-  describe "GET initialize" do
+  describe "GET init" do
     it "returns http success" do
-      get :initialize
+      get :init
+      expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe "GET list" do
+    it "returns http success" do
+      get :list
       expect(response).to have_http_status(:success)
     end
   end
@@ -33,6 +33,13 @@ RSpec.describe ListsController, :type => :controller do
   describe "GET edit_member" do
     it "returns http success" do
       get :edit_member
+      expect(response).to have_http_status(:success)
+    end
+  end
+
+  describe "GET confirm_kingaku" do
+    it "returns http success" do
+      get :confirm_kingaku
       expect(response).to have_http_status(:success)
     end
   end

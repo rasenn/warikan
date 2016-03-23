@@ -1,0 +1,10 @@
+<%= form_tag :action => "list" , :url_hash => @list.url_hash do %>
+  List Name<br />
+  <%= text_field_tag "name" %><br />
+  <br /><br />
+  Members<br />
+  <%= text_field_tag "members[]" %><br />
+  <%= text_field_tag "members[]" %><br />
+  <%= text_field_tag "members[]" %><br />
+  <%= submit_tag "New" %>
+<% end %>
