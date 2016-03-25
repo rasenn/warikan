@@ -17,6 +17,7 @@ class ListsController < ApplicationController
       params["members"].each do |m|
         WarikanUtil.add_member(@list.id,m)
       end
+      params["url_hash"] = @list.url_hash
     end
     @kingakus = @list.kingakus
     @shiharaigaku = WarikanUtil.calc_shiharaigaku(@list.id)

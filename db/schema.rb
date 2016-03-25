@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 20160321140417) do
     t.datetime "updated_at", null: false
   end
 
+  add_index "lists", ["url_hash"], name: "index_lists_on_url_hash"
+
   create_table "members", force: :cascade do |t|
     t.string   "name"
     t.integer  "list_id"

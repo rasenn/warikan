@@ -1,10 +1,36 @@
-<%= form_tag :action => "list" , :url_hash => @list.url_hash do %>
-  List Name<br />
-  <%= text_field_tag "name" %><br />
-  <br /><br />
-  Members<br />
-  <%= text_field_tag "members[]" %><br />
-  <%= text_field_tag "members[]" %><br />
-  <%= text_field_tag "members[]" %><br />
-  <%= submit_tag "New" %>
+<script>
+  function add_field(){
+    $("#members").append("<input type='text' name='members[]' id='members_' />");
+  }
+</script>
+
+<%= form_tag :action => "list", :url_hash => @list.url_hash do %>
+
+<br />
+<div class="row">
+  <div class="large-11 large-centered columns">
+    <div class="callout secondary">
+      List Name:<br />
+      <%= text_field_tag "name" %>
+    </div>
+
+
+    <div class="callout secondary">
+      Members:<br />
+      <div id="members">
+	<%= text_field_tag "members[]" %>
+      </div>
+      <div class="float-right">
+	<input class="button " type="button" value="行追加" onclick="add_field()">
+      </div>
+      <br /><br />
+    </div>
+    
+    <div class="large-centered columns">
+      <%= submit_tag "New", :class => "success button float-center" %>
+    </div>
+    
+  </div>
+  
+</div>
 <% end %>

@@ -1,22 +1,44 @@
-<%= @flush %>
+<div class="row">
+  <div class="large-11 large-center columns">
+    <br />
+    <% if @flush %>
+    <div class="callout alert">
+      <h4>test<%= @flush %></h4>
+    </div>
+    <% end %>
 
-<table width="" cellspacing="" cellpadding="" border="">
-<tr>
-  <th>メンバ</th><th>削除</th>
-</tr>
-  <% @members.each do |m| %>
-<tr>
-  <td><%=m.name%></td><td><%= link_to "X", :action => "edit_member", :url_hash => @url_hash, :act => "delete", :member_id => m.id%></td>
-</td>
-  <% end %>
-</table>
-<br /><br />
+    <div class="callout">
+      <table width="" cellspacing="" cellpadding="" border="">
+	<thread>
+	  <tr>
+	    <th>メンバ</th><th>削除</th>
+	  </tr>
+	</thread>
+	<tbody>
+	  <% @members.each do |m| %>
+	  <tr>
+	    <td align="center"><%=m.name%></td>
+	    <td><%= link_to "削除", {:action => "edit_member", :url_hash => @url_hash, :act => "delete", :member_id => m.id }, :class => "button alert expanded" %></td>
+	  </tr>
+	  <% end %>
+	</tbody>
+      </table>
+    </div>
 
-メンバ追加 <br />
-<%= form_tag :action => "edit_member", :url_hash => @url_hash, :act => "add" do %>
-<%= text_field_tag "name" %><br />
-<%= submit_tag "Add" %>
-<% end %>
-<br /><br />
-
-<%= link_to "OK", :action => "list", :url_hash => @url_hash %>
+    
+    <div class="callout">
+      <%= form_tag :action => "edit_member", :url_hash => @url_hash, :act => "add" do %>
+      <div class="input-group">
+	<span class="input-group-label">メンバ追加</span>
+	<%= text_field_tag "name", "", :class => "input-group-field" %>
+      </div>
+      <div class="float-right">
+	<%= submit_tag "追加", :class => "button success" %>
+      </div>
+      <% end %>
+      <br /><br />
+    </div>
+    <%= link_to "戻る", {:action => "list", :url_hash => @url_hash }, :class => "button expanded" %>
+  </div>
+</div>
+<br />
