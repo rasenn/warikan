@@ -10,7 +10,7 @@ class ListsController < ApplicationController
 
   def list
     redirect_to "root" unless params["url_hash"]
-    @list = List.includes({kingakus: [:member]}).find_by("url_hash=?",params["url_hash"])
+    @list = List.includes([paids: [:pay_member, :recieve_member], kingakus: [:member]]).find_by("url_hash=?",params["url_hash"])
     if params["members"] && params["name"]
       @list.name = params["name"]
       @list.save
@@ -61,7 +61,7 @@ class ListsController < ApplicationController
           list = List.find_by("url_hash=?",params["url_hash"])
           WarikanUtil.delete_member(list.id, params["member_id"])
         else
-          @flush = "支払いがあるため、削除できません。"
+          @flash = "支払いがあるため、削除できません。"
         end
       end
     elsif params[:act] == "add" && params["name"]
@@ -72,6 +72,34 @@ class ListsController < ApplicationController
     list = List.includes("members").find_by("url_hash=?",params["url_hash"])
     @members = list.members
     @url_hash = params["url_hash"]
+  end
+
+  def paid
+    redirect_to "root" unless params["url_hash"]
+    @list = List.find_by("url_hash=?",params["url_hash"])
+    @list = List.includes(:members).find_by("url_hash=?",params["url_hash"])
+    @members = @list.members
+  end
+
+  def add_paid
+    redirect_to "root" unless params["url_hash"]
+    @list = List.find_by("url_hash=?",params["url_hash"])
+    result = false
+    if params["member_id_pay"] && params["member_id_recieve"] && 
+       params["kingaku"] && params["memo"]
+       result = WarikanUtil.paid(@list.id,params["member_id_pay"], params["member_id_recieve"], 
+              	        params["kingaku"], params["memo"])
+    end
+    # 結果がfalse = 支払メンバと受取メンバが同じ場合
+    if params["kingaku"].to_i == 0 
+      redirect_to ({:action => "paid", :url_hash => params["url_hash"] }),
+                   warning: "金額が入力されていません。"
+    elsif result
+      redirect_to :action => "list", :url_hash => params["url_hash"]    
+    else
+      redirect_to ({:action => "paid", :url_hash => params["url_hash"] }), 
+      		   warning: "支払いメンバと受取りメンバが同じです。"
+    end
   end
 
 end

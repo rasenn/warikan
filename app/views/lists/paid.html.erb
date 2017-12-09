@@ -1,0 +1,35 @@
+<br />
+<div class="row">
+  <div class="large-11 columns">
+    <div class="callout">
+      <%= form_tag :controller => "lists",:action => "add_paid", :url_hash => @list.url_hash do %>
+      <div class="input-group">
+	<span class="input-group-label">金額</span>
+	<%= text_field_tag "kingaku", "", :class => "input-group-field", :type => "number" %>
+      </div>
+
+      <div class="input-group">
+	<span class="input-group-label">メモ</span>
+	<%= text_field_tag "memo", "", :class => "input-group-field" %>
+      </div>
+
+      <div class="input-group">
+	<span class="input-group-label">支払いメンバ</span>
+	<%= select_tag "member_id_pay", options_from_collection_for_select(@members, :id, :name), :class => "input-group-field" %>
+      </div>
+
+      <div class="input-group">
+	<span class="input-group-label">受取りメンバ</span>
+	<%= select_tag "member_id_recieve", options_from_collection_for_select(@members, :id, :name), :class => "input-group-field" %>
+      </div>
+
+      <div class="float-right">
+	<%= submit_tag "登録", :class => "success button" %>
+	<%= hidden_field_tag "before_confirm" , "true"%>
+	<% end %>
+      </div>
+      <br /><br />
+    </div>
+  </div>
+</div>
+<br />

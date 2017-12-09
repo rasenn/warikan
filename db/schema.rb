@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160321140417) do
+ActiveRecord::Schema.define(version: 20171206152952) do
 
   create_table "kingakus", force: :cascade do |t|
     t.integer  "kingaku"
@@ -42,5 +42,29 @@ ActiveRecord::Schema.define(version: 20160321140417) do
   end
 
   add_index "members", ["list_id"], name: "index_members_on_list_id"
+
+  create_table "paids", force: :cascade do |t|
+    t.integer  "kingaku"
+    t.string   "memo"
+    t.integer  "pay_member_id",     null: false
+    t.integer  "recieve_member_id", null: false
+    t.integer  "list_id"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
+
+  add_index "paids", ["list_id"], name: "index_paids_on_list_id"
+  add_index "paids", ["pay_member_id"], name: "index_paids_on_pay_member_id"
+  add_index "paids", ["recieve_member_id"], name: "index_paids_on_recieve_member_id"
+
+  create_table "whos", force: :cascade do |t|
+    t.integer  "kingaku_id"
+    t.integer  "member_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "whos", ["kingaku_id"], name: "index_whos_on_kingaku_id"
+  add_index "whos", ["member_id"], name: "index_whos_on_member_id"
 
 end

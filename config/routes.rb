@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   post 'lists/edit_member'
 
   get 'lists/delete_kingaku'
+
+  get 'lists/paid'
+  post 'lists/add_paid'
   
   root "lists#new"
   

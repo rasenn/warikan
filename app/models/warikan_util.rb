@@ -43,7 +43,7 @@ class WarikanUtil
   end
 
   def self.calc_shiharaigaku(list_id)
-    lists = List.includes([:members, :kingakus]).find_by("id=?", list_id)
+    lists = List.includes([:members, :kingakus, :paids]).find_by("id=?", list_id)
     members = lists.members
     kingakus = lists.kingakus
 
@@ -58,11 +58,16 @@ class WarikanUtil
     end
     sum = 0
 
-
     # calc
     kingakus.each do |k|
       member_kingakus[k.member_id] += k.kingaku
       sum += k.kingaku
+    end
+
+    # calc inidivisual paid
+    lists.paids.each do |pay|
+      member_kingakus[pay.pay_member_id] += pay.kingaku
+      member_kingakus[pay.recieve_member_id] -= pay.kingaku
     end
 
     # create return
@@ -76,6 +81,24 @@ class WarikanUtil
 
   def self.delete_list
     # TODO
+  end
+
+  def self.paid(list_id,pay_member_id,recieve_member_id,cost,memo)
+    return false unless List.find_by("id=?",list_id) && Member.find_by("id=?",pay_member_id) &&
+                        Member.find_by("id=?",recieve_member_id) 
+
+    if pay_member_id == recieve_member_id
+      return false
+    end
+
+    paid = Paid.new
+    paid.list = List.find_by("id=?",list_id)
+    paid.kingaku = cost.to_i
+    paid.pay_member_id = pay_member_id.to_i
+    paid.recieve_member_id = recieve_member_id.to_i
+    paid.memo = memo
+    paid.save ? paid.id : false
+
   end
   
 end
