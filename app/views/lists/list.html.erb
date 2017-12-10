@@ -26,7 +26,11 @@
 	    <td align="center"><%=k.memo%></td>
 	    <td align="center"><%=k.member.name%></td>
 	    <td align="center">
-	      <%=k.whos.map{|w|@id2name[w.member_id]}.join(",")%>
+	      <% if k.whos.size > 0 %>
+	      <%= k.whos.map{|w|@id2name[w.member_id]}.join(",") %>
+	      <% else %>
+	        -
+	      <% end %>
 	    </td>
 	    <td align="center"><%= link_to "削除", {:action => "delete_kingaku", :url_hash => @list.url_hash, :kingaku_id => k.id}, :class => "button alert"  %></td>
 	  </tr>
