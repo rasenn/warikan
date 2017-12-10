@@ -3,6 +3,8 @@
   <div class="large-11 columns">
     <div class="callout">
       <%= form_tag :controller => "lists",:action => "confirm_kingaku", :url_hash => @list.url_hash do %>
+
+      <h3>支払情報</h3>
       <div class="input-group">
 	<span class="input-group-label">金額</span>
 	<%= text_field_tag "kingaku", "", :class => "input-group-field", :type => "number" %>
@@ -12,9 +14,18 @@
 	<%= text_field_tag "memo", "", :class => "input-group-field" %>
       </div>
       <div class="input-group">
-	<span class="input-group-label">メンバ</span>
+	<span class="input-group-label">支払メンバ</span>
 	<%= select_tag "member_id", options_from_collection_for_select(@members, :id, :name), :class => "input-group-field" %>
       </div>
+
+
+      <h3>割り勘メンバ</h3>
+      <div class="grid-x grid-padding-x">
+        <% @list.members.each do |member| %>
+          <%= check_box_tag "member["+member.id.to_s+"]", member.id , {:checked => true } %><label for="<%= member.name%>"><%= member.name%></label>
+        <% end %>
+      </div>
+
       <div class="float-right">
 	<%= submit_tag "登録", :class => "success button" %>
 	<%= hidden_field_tag "before_confirm" , "true"%>

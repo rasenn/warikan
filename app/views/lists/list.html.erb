@@ -14,16 +14,20 @@
 	  <tr>
 	    <th>金額</th>
 	    <th>メモ</th>
-	    <th>メンバ</th>
+	    <th>立替メンバ</th>
+	    <th>割勘メンバ</th>
 	    <th>削除</th>
 	  </tr>
 	</thread>
 	<tbody>
 	  <%- @kingakus.each do |k| -%>
 	  <tr>
-	    <td align="center"><%=k.kingaku%></td>
+	    <td align="center"><%=k.kingaku.to_s(:delimited)%></td>
 	    <td align="center"><%=k.memo%></td>
 	    <td align="center"><%=k.member.name%></td>
+	    <td align="center">
+	      <%=k.whos.map{|w|@id2name[w.member_id]}.join(",")%>
+	    </td>
 	    <td align="center"><%= link_to "削除", {:action => "delete_kingaku", :url_hash => @list.url_hash, :kingaku_id => k.id}, :class => "button alert"  %></td>
 	  </tr>
 	  <%- end -%>
@@ -46,6 +50,7 @@
 	    <th >受取りメンバ</th>
 	    <th>精算額</th>
 	    <th>メモ</th>
+	    <th>削除</th>
 	  </tr>
 	</thread>
 	<tbody>
@@ -53,8 +58,9 @@
 	  <tr>
 	    <td align="center"><%= pay.pay_member.name%></td>
 	    <td align="center"><%= pay.recieve_member.name%></td>
-	    <td align="center"><%= pay.kingaku %></td>
+	    <td align="center"><%= pay.kingaku.to_s(:delimited) %></td>
 	    <td align="center"><%= pay.memo %></td>
+    <td align="center"><%= link_to "削除", {:action => "delete_paid", :url_hash => @list.url_hash, :paid_id => pay.id}, :class => "button alert"  %></td>
 	  </tr>
 	  <% end %>
 	</tbody>
@@ -81,9 +87,9 @@
 	  <tr>
 	    <td align="center"><%=l[1]%></td>
 	    <% if l[2] < 0 %>
-	       <td align="center"><%= l[2].abs %> 円受取り</td>
+	       <td align="center"><%= l[2].abs.to_s(:delimited) %> 円受取り</td>
 	    <% else %>
-	       <td align="center"><%= l[2].abs %> 円支払い</td>
+	       <td align="center"><%= l[2].abs.to_s(:delimited) %> 円支払い</td>
 	    <% end %>
 	  </tr>
 	  <%- end -%>

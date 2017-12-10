@@ -7,14 +7,14 @@ Rails.application.routes.draw do
 
   get 'lists/add_kingaku'
   post 'lists/confirm_kingaku'
+  get 'lists/delete_kingaku'
 
   get 'lists/edit_member'
   post 'lists/edit_member'
 
-  get 'lists/delete_kingaku'
-
   get 'lists/paid'
   post 'lists/add_paid'
+  get 'lists/delete_paid'
   
   root "lists#new"
   

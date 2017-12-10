@@ -17,7 +17,7 @@ class WarikanUtil
   end
 
   # TODO class check
-  def self.add_kingaku(list_id,member_id,ikingaku,memo)
+  def self.add_kingaku(list_id,member_id,ikingaku,memo,members)
     return false unless List.find_by("id=?",list_id) && Member.find_by("id=?",member_id)
     kingaku = Kingaku.new
     kingaku.list_id = list_id
@@ -25,6 +25,14 @@ class WarikanUtil
     kingaku.kingaku = ikingaku
     kingaku.memo = memo
     kingaku.save ? kingaku.id : false
+
+    members.each do |m|
+      w = Who.new
+      w.kingaku_id = kingaku.id
+      w.member_id = m[0]
+      w.save
+    end
+
   end
 
   def self.already_added?(list_id,kingaku)
@@ -38,12 +46,16 @@ class WarikanUtil
   end
 
   def self.delete_kingaku(kingaku_id)
-    kingaku = Kingaku.find_by("id=?",kingaku_id)
+    kingaku = Kingaku.includes(:whos).find_by("id=?",kingaku_id)
+    kingaku.whos.each do |w|
+      w.delete
+    end
+    
     kingaku.delete if kingaku
   end
 
   def self.calc_shiharaigaku(list_id)
-    lists = List.includes([:members, :kingakus, :paids]).find_by("id=?", list_id)
+    lists = List.includes([:members, { kingakus: [:whos] }, :paids]).find_by("id=?", list_id)
     members = lists.members
     kingakus = lists.kingakus
 
@@ -58,13 +70,29 @@ class WarikanUtil
     end
     sum = 0
 
+    
     # calc
+    kobetsu = false
     kingakus.each do |k|
-      member_kingakus[k.member_id] += k.kingaku
-      sum += k.kingaku
+      # 支払メンバがない場合、後方互換のために残す
+      if k.whos.size == 0
+        kobetsu = true
+        member_kingakus[k.member_id] += k.kingaku
+        sum += k.kingaku
+
+      # 支払メンバがある場合
+      else
+        # 立て替えたメンバに受取金額を追加
+        member_kingakus[k.member_id] += k.kingaku
+
+	# 各メンバで割り勘した金額を追記
+	k.whos.each do |w|
+          member_kingakus[w.member_id] -= (k.kingaku / k.whos.size ).to_i
+	end
+      end
     end
 
-    # calc inidivisual paid
+    # 個別支払の精算計算
     lists.paids.each do |pay|
       member_kingakus[pay.pay_member_id] += pay.kingaku
       member_kingakus[pay.recieve_member_id] -= pay.kingaku
@@ -73,7 +101,11 @@ class WarikanUtil
     # create return
     result = Array.new
     id2member.each do |m_id, m_name|
-      result.push [m_id, m_name, (sum/m_count - member_kingakus[m_id])]
+      if kobetsu
+        result.push [m_id, m_name, (sum/m_count - member_kingakus[m_id])]
+      else
+        result.push [m_id, m_name, ( - member_kingakus[m_id])]
+      end
     end
 
     return result
@@ -100,5 +132,9 @@ class WarikanUtil
     paid.save ? paid.id : false
 
   end
-  
+
+  def self.delete_paid(paid_id)
+    paid = Paid.find_by("id=?",paid_id)
+    paid.delete if paid
+  end
 end

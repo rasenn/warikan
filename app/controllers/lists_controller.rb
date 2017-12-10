@@ -10,7 +10,9 @@ class ListsController < ApplicationController
 
   def list
     redirect_to "root" unless params["url_hash"]
-    @list = List.includes([paids: [:pay_member, :recieve_member], kingakus: [:member]]).find_by("url_hash=?",params["url_hash"])
+    @list = List.includes([{paids: [:pay_member, :recieve_member], kingakus: [:member]}, :members]).find_by("url_hash=?",params["url_hash"])
+
+    # リスト新規作成時
     if params["members"] && params["name"]
       @list.name = params["name"]
       @list.save
@@ -19,6 +21,13 @@ class ListsController < ApplicationController
       end
       params["url_hash"] = @list.url_hash
     end
+    
+    # 立替対象メンバの名前変換用
+    @id2name = Hash.new
+    @list.members.each do |m|
+      @id2name[m.id] = m.name
+    end
+
     @kingakus = @list.kingakus
     @shiharaigaku = WarikanUtil.calc_shiharaigaku(@list.id)
   end
@@ -32,16 +41,25 @@ class ListsController < ApplicationController
   # params = {before_confirm, kingaku, url_hash, memo, member_id}
   def confirm_kingaku
     redirect_to "root" unless params["url_hash"]
-    list = List.find_by("url_hash=?", params["url_hash"])
-#    if params["before_confirm"] == "true" && WarikanUtil.already_added?(list.id, params["kingaku"])
-#      @member_id = params["member_id"]
-#      @kingaku = params["kingaku"]
-#      @url_hash = params["url_hash"]
-#      @memo = params["memo"]
-#    else
-    WarikanUtil.add_kingaku(list.id, params["member_id"].to_i, params["kingaku"].to_i, params["memo"])
-    redirect_to :action => "list", :url_hash => list.url_hash
-#    end
+    p params
+    if params["kingaku"] && params["member_id"]
+
+      list = List.find_by("url_hash=?", params["url_hash"])
+#      if params["before_confirm"] == "true" && WarikanUtil.already_added?(list.id, params["kingaku"])
+#        @member_id = params["member_id"]
+#        @kingaku = params["kingaku"]
+#        @url_hash = params["url_hash"]
+#        @memo = params["memo"]
+#      else
+      WarikanUtil.add_kingaku(list.id, params["member_id"].to_i, params["kingaku"].to_i, params["memo"],params[:member])
+      p params[:member]
+      redirect_to :action => "list", :url_hash => list.url_hash
+
+    else
+      redirect_to :action => "add_kingaku", :url_hash => params[:url_hash], :warning => "入力してください。"      
+
+    end
+#      end   
   end
 
   def delete_kingaku
@@ -101,5 +119,14 @@ class ListsController < ApplicationController
       		   warning: "支払いメンバと受取りメンバが同じです。"
     end
   end
+
+  def delete_paid
+    redirect_to "root" unless params["url_hash"]
+    if params["paid_id"]
+      WarikanUtil.delete_paid(params["paid_id"].to_i)
+    end
+    redirect_to :action => "list", :url_hash => params["url_hash"]
+  end
+
 
 end
