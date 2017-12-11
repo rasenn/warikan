@@ -11,8 +11,8 @@ class CreatePaids < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    add_foreign_key :paids, :pay_member_id
-    add_foreign_key :paids, :recive_member_id
-    add_foreign_key :kingakus, :lists
+#    add_foreign_key :paids, :pay_member_id
+#    add_foreign_key :paids, :recive_member_id
+#    add_foreign_key :kingakus, :lists
   end
 end
